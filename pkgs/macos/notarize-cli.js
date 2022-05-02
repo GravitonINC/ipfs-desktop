@@ -28,7 +28,7 @@ const { notarize } = require('electron-notarize-dmg')
   }
   console.log(`Initializing notarization of DMG at ${artifactPath}`)
   await notarize({
-    appBundleId: 'io.ipfs.desktop',
+    appBundleId: 'io.ipfs.retro.desktop',
     dmgPath: artifactPath,
     staple: false,
     appleId: process.env.APPLEID,

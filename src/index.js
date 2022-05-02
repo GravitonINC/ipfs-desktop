@@ -1,13 +1,5 @@
 require('v8-compile-cache')
 const { app, dialog } = require('electron')
-
-if (process.env.NODE_ENV === 'test') {
-  const path = require('path')
-
-  app.setPath('home', process.env.HOME)
-  app.setPath('userData', path.join(process.env.HOME, 'data'))
-}
-
 const fixPath = require('fix-path')
 const { criticalErrorDialog } = require('./dialogs')
 const logger = require('./common/logger')
@@ -20,15 +12,17 @@ const setupAutoLaunch = require('./auto-launch')
 const setupAutoGc = require('./automatic-gc')
 const setupPubsub = require('./enable-pubsub')
 const setupNamesysPubsub = require('./enable-namesys-pubsub')
+const setupDownloadCid = require('./download-cid')
 const setupTakeScreenshot = require('./take-screenshot')
 const setupAppMenu = require('./app-menu')
 const setupArgvFilesHandler = require('./argv-files-handler')
-const setupAutoUpdater = require('./auto-updater')
+// const setupAutoUpdater = require('./auto-updater')
 const setupTray = require('./tray')
 const setupIpfsOnPath = require('./ipfs-on-path')
 const setupAnalytics = require('./analytics')
 const setupSecondInstance = require('./second-instance')
 
+// const store = require('./common/store')
 // Hide Dock
 if (app.dock) app.dock.hide()
 
@@ -66,6 +60,7 @@ process.on('unhandledRejection', handleError)
 async function run () {
   try {
     await app.whenReady()
+    console.log('App is rerady now >>>>>>>>>> ')
   } catch (e) {
     dialog.showErrorBox('Electron could not start', e.stack)
     app.exit(1)
@@ -77,9 +72,9 @@ async function run () {
     await setupAppMenu(ctx)
 
     await setupWebUI(ctx) // ctx.webui, launchWebUI
-    await setupAutoUpdater(ctx) // ctx.manualCheckForUpdates
     await setupTray(ctx) // ctx.tray
     await setupDaemon(ctx) // ctx.getIpfsd, startIpfs, stopIpfs, restartIpfs
+    // await setupAutoUpdater(ctx) // ctx.manualCheckForUpdates
 
     await Promise.all([
       setupArgvFilesHandler(ctx),
@@ -89,6 +84,7 @@ async function run () {
       setupNamesysPubsub(ctx),
       setupSecondInstance(ctx),
       // Setup global shortcuts
+      setupDownloadCid(ctx),
       setupTakeScreenshot(ctx),
       // Setup PATH-related features
       setupNpmOnIpfs(ctx),

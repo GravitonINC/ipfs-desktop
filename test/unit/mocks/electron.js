@@ -9,10 +9,7 @@ module.exports = function mockElectron (opts = {}) {
     BrowserWindow: {
       getAllWindows: sinon.stub()
     },
-    app: {},
-    clipboard: {
-      writeText: sinon.spy()
-    }
+    app: {}
   }
 
   if (opts.withDock) {

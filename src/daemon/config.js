@@ -1,7 +1,6 @@
-const { app, BrowserWindow } = require('electron')
 const { join } = require('path')
 const fs = require('fs-extra')
-const { multiaddr } = require('multiaddr')
+const multiaddr = require('multiaddr')
 const http = require('http')
 const portfinder = require('portfinder')
 const { shell } = require('electron')
@@ -47,9 +46,9 @@ function applyDefaults (ipfsd) {
   config.Swarm = config.Swarm || {}
   config.Swarm.DisableNatPortMap = false
   config.Swarm.ConnMgr = config.Swarm.ConnMgr || {}
-  config.Swarm.ConnMgr.GracePeriod = '1m'
-  config.Swarm.ConnMgr.LowWater = 20
-  config.Swarm.ConnMgr.HighWater = 40
+  config.Swarm.ConnMgr.GracePeriod = '300s'
+  config.Swarm.ConnMgr.LowWater = 50
+  config.Swarm.ConnMgr.HighWater = 300
 
   config.Discovery = config.Discovery || {}
   config.Discovery.MDNS = config.Discovery.MDNS || {}
@@ -58,31 +57,15 @@ function applyDefaults (ipfsd) {
   writeConfigFile(ipfsd, config)
 }
 
-const getRpcApiPort = (config) => getHttpPort(config.Addresses.API)
-const getGatewayPort = (config) => getHttpPort(config.Addresses.Gateway)
-function getHttpPort (addrs) {
-  let httpUrl = null
-
-  if (Array.isArray(addrs)) {
-    httpUrl = addrs.find(v => v.includes('127.0.0.1'))
-  } else {
-    httpUrl = addrs
-  }
-
-  const gw = parseCfgMultiaddr(httpUrl)
-  return gw.nodeAddress().port
-}
-
 // Apply one-time updates to the config of IPFS node.
 // This is the place where we execute fixes and performance tweaks for existing users.
 function migrateConfig (ipfsd) {
   // Bump revision number when new migration rule is added
-  const REVISION = 4
+  const REVISION = 1
   const REVISION_KEY = 'daemonConfigRevision'
-  const CURRENT_REVISION = store.get(REVISION_KEY, 0)
 
   // Migration is applied only once per revision
-  if (CURRENT_REVISION >= REVISION) return
+  if (store.get(REVISION_KEY) >= REVISION) return
 
   // Read config
   let config = null
@@ -95,59 +78,14 @@ function migrateConfig (ipfsd) {
     return
   }
 
-  if (CURRENT_REVISION < 1) {
-    // Cleanup https://github.com/ipfs-shipyard/ipfs-desktop/issues/1631
-    if (config.Discovery && config.Discovery.MDNS && config.Discovery.MDNS.enabled) {
-      config.Discovery.MDNS.Enabled = config.Discovery.MDNS.Enabled || true
-      delete config.Discovery.MDNS.enabled
-      changed = true
-    }
+  // Cleanup https://github.com/ipfs-shipyard/ipfs-desktop/issues/1631
+  if (config.Discovery && config.Discovery.MDNS && config.Discovery.MDNS.enabled) {
+    config.Discovery.MDNS.Enabled = config.Discovery.MDNS.Enabled || true
+    delete config.Discovery.MDNS.enabled
+    changed = true
   }
 
-  if (CURRENT_REVISION < 3) {
-    const api = config.API || {}
-    const httpHeaders = api.HTTPHeaders || {}
-    const accessControlAllowOrigin = httpHeaders['Access-Control-Allow-Origin'] || []
-
-    const addURL = url => {
-      if (!accessControlAllowOrigin.includes(url)) {
-        accessControlAllowOrigin.push(url)
-        return true
-      }
-      return false
-    }
-
-    const addedWebUI = addURL('https://webui.ipfs.io')
-    const addedGw = addURL(`http://webui.ipfs.io.ipns.localhost:${getGatewayPort(config)}`)
-
-    // https://github.com/ipfs/ipfs-companion/issues/1068 in go-ipfs <0.13
-    // TODO: remove addedApiPort after go-ipfs 0.13 ships
-    const addedApiPort = addURL(`http://127.0.0.1:${getRpcApiPort(config)}`)
-
-    if (addedWebUI || addedGw || addedApiPort) {
-      httpHeaders['Access-Control-Allow-Origin'] = accessControlAllowOrigin
-      api.HTTPHeaders = httpHeaders
-      config.API = api
-      changed = true
-    }
-  }
-
-  if (CURRENT_REVISION < 4) {
-    // lower ConnMgr https://github.com/ipfs/ipfs-desktop/issues/2039
-    const { GracePeriod, LowWater, HighWater } = config.Swarm.ConnMgr
-    if (GracePeriod === '300s') {
-      config.Swarm.ConnMgr.GracePeriod = '1m'
-      changed = true
-    }
-    if (LowWater > 20) {
-      config.Swarm.ConnMgr.LowWater = 20
-      changed = true
-    }
-    if (HighWater > 40) {
-      config.Swarm.ConnMgr.HighWater = 40
-      changed = true
-    }
-  }
+  // TODO: update config.Swarm.ConnMgr.*
 
   if (changed) {
     try {
@@ -159,6 +97,55 @@ function migrateConfig (ipfsd) {
     }
   }
   store.set(REVISION_KEY, REVISION)
+}
+
+// Check for * and webui://- in allowed origins on API headers.
+// The wildcard was a ipfsd-ctl default, that we don't want, and
+// webui://- was an earlier experiement that should be cleared out.
+//
+// We remove them the first time we find them. If we find it again on subsequent
+// runs then we leave them in, under the assumption that you really want it.
+// TODO: show warning in UI when wildcard is in the allowed origins.
+function checkCorsConfig (ipfsd) {
+  if (store.get('checkedCorsConfig')) {
+    // We've already checked so skip it.
+    return
+  }
+
+  let config = null
+
+  try {
+    config = readConfigFile(ipfsd)
+  } catch (err) {
+    // This is a best effort check, dont blow up here, that should happen else where.
+    // TODO: gracefully handle config errors elsewhere!
+    logger.error(`[daemon] checkCorsConfig: error reading config file: ${err.message || err}`)
+    return
+  }
+
+  if (config.API && config.API.HTTPHeaders && config.API.HTTPHeaders['Access-Control-Allow-Origin']) {
+    const allowedOrigins = config.API.HTTPHeaders['Access-Control-Allow-Origin']
+    const originsToRemove = ['*', 'webui://-']
+
+    if (Array.isArray(allowedOrigins)) {
+      const specificOrigins = allowedOrigins.filter(origin => !originsToRemove.includes(origin))
+
+      if (specificOrigins.length !== allowedOrigins.length) {
+        config.API.HTTPHeaders['Access-Control-Allow-Origin'] = specificOrigins
+
+        try {
+          writeConfigFile(ipfsd, config)
+          store.set('updatedCorsConfig', Date.now())
+        } catch (err) {
+          logger.error(`[daemon] checkCorsConfig: error writing config file: ${err.message || err}`)
+          // don't skip setting checkedCorsConfig so we try again next time time.
+          return
+        }
+      }
+    }
+  }
+
+  store.set('checkedCorsConfig', true)
 }
 
 const parseCfgMultiaddr = (addr) => (addr.includes('/http')
@@ -188,11 +175,6 @@ async function checkIfAddrIsDaemon (addr) {
   })
 }
 
-const findFreePort = async (port) => {
-  port = Math.max(port, 1024)
-  return portfinder.getPortPromise({ port })
-}
-
 async function checkPortsArray (ipfsd, addrs) {
   addrs = addrs.filter(Boolean)
 
@@ -210,7 +192,7 @@ async function checkPortsArray (ipfsd, addrs) {
       continue
     }
 
-    const freePort = await findFreePort(port)
+    const freePort = await portfinder.getPortPromise({ port: port, stopPort: port + 100 })
 
     if (port !== freePort) {
       const opt = showDialog({
@@ -257,13 +239,13 @@ async function checkPorts (ipfsd) {
   const apiPort = parseInt(configApiMa.nodeAddress().port, 10)
   const gatewayPort = parseInt(configGatewayMa.nodeAddress().port, 10)
 
-  const freeGatewayPort = await findFreePort(gatewayPort)
-  let freeApiPort = await findFreePort(apiPort)
-
-  // ensure the picked ports are different
-  while (freeApiPort === freeGatewayPort) {
-    freeApiPort = await findFreePort(freeApiPort + 1)
+  const findFreePort = async (port, from) => {
+    port = Math.max(port, from, 1024)
+    return portfinder.getPortPromise({ port, stopPort: port + 100 })
   }
+
+  const freeGatewayPort = await findFreePort(gatewayPort, 8080)
+  const freeApiPort = await findFreePort(apiPort, 5001)
 
   const busyApiPort = apiPort !== freeApiPort
   const busyGatewayPort = gatewayPort !== freeGatewayPort
@@ -331,47 +313,6 @@ async function checkPorts (ipfsd) {
   logger.info('[daemon] ports updated')
 }
 
-function checkValidConfig (ipfsd) {
-  if (!fs.pathExistsSync(ipfsd.path)) {
-    // If the repository doesn't exist, skip verification.
-    return true
-  }
-
-  try {
-    const stats = fs.statSync(ipfsd.path)
-    if (!stats.isDirectory()) {
-      throw new Error('IPFS_PATH must be a directory')
-    }
-
-    if (!configExists(ipfsd)) {
-      // Config is generated automatically if it doesn't exist.
-      return true
-    }
-
-    // This should catch errors such having no configuration file,
-    // IPFS_DIR not being a directory, or the configuration file
-    // being corrupted.
-    readConfigFile(ipfsd)
-    return true
-  } catch (e) {
-    // Save to error.log
-    logger.error(e)
-
-    // Hide other windows so the user focus in on the dialog
-    BrowserWindow.getAllWindows().forEach(w => w.hide())
-
-    // Show blocking dialog
-    showDialog({
-      title: i18n.t('invalidRepositoryDialog.title'),
-      message: i18n.t('invalidRepositoryDialog.message', { path: ipfsd.path }),
-      buttons: [i18n.t('quit')]
-    })
-
-    // Only option is to quit
-    app.quit()
-  }
-}
-
 module.exports = Object.freeze({
   configPath,
   configExists,
@@ -379,6 +320,6 @@ module.exports = Object.freeze({
   rmApiFile,
   applyDefaults,
   migrateConfig,
-  checkPorts,
-  checkValidConfig
+  checkCorsConfig,
+  checkPorts
 })

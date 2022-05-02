@@ -11,20 +11,32 @@ const { STATUS } = require('./daemon')
 const { IS_MAC, IS_WIN, VERSION, GO_IPFS_VERSION } = require('./common/consts')
 
 const { CONFIG_KEY: SCREENSHOT_KEY, SHORTCUT: SCREENSHOT_SHORTCUT, takeScreenshot } = require('./take-screenshot')
+const { CONFIG_KEY: DOWNLOAD_KEY, SHORTCUT: DOWNLOAD_SHORTCUT, downloadCid } = require('./download-cid')
 const { CONFIG_KEY: AUTO_LAUNCH_KEY, isSupported: supportsLaunchAtLogin } = require('./auto-launch')
 const { CONFIG_KEY: PUBSUB_KEY } = require('./enable-pubsub')
 const { CONFIG_KEY: NAMESYS_PUBSUB_KEY } = require('./enable-namesys-pubsub')
 const { CONFIG_KEY: AUTO_GC_KEY } = require('./automatic-gc')
+const { CONFIG_KEY: IPFS_PATH_KEY } = require('./ipfs-on-path')
+const { CONFIG_KEY: NPM_IPFS_KEY } = require('./npm-on-ipfs')
 const { CONFIG_KEY: AUTO_LAUNCH_WEBUI_KEY } = require('./webui')
 
 const CONFIG_KEYS = [
   AUTO_LAUNCH_KEY,
   AUTO_LAUNCH_WEBUI_KEY,
   AUTO_GC_KEY,
+  IPFS_PATH_KEY,
+  NPM_IPFS_KEY,
   SCREENSHOT_KEY,
+  DOWNLOAD_KEY,
   PUBSUB_KEY,
   NAMESYS_PUBSUB_KEY
 ]
+
+// We show them if user enabled them before, but hide when off
+const DEPRECATED_KEYS = new Set([
+  IPFS_PATH_KEY, // brittle, buggy, way better if user does this by hand for now
+  NPM_IPFS_KEY // superseded by https://github.com/forestpm/forest
+])
 
 function buildCheckbox (key, label) {
   return {
@@ -32,6 +44,7 @@ function buildCheckbox (key, label) {
     label: i18n.t(label),
     click: () => { ipcMain.emit(`toggle_${key}`) },
     type: 'checkbox',
+    visible: !DEPRECATED_KEYS.has(key),
     checked: false
   }
 }
@@ -100,6 +113,13 @@ function buildMenu (ctx) {
       accelerator: IS_MAC ? SCREENSHOT_SHORTCUT : null,
       enabled: false
     },
+    {
+      id: 'downloadCid',
+      label: i18n.t('downloadCid'),
+      click: () => { downloadCid(ctx) },
+      accelerator: IS_MAC ? DOWNLOAD_SHORTCUT : null,
+      enabled: false
+    },
     { type: 'separator' },
     {
       label: IS_MAC ? i18n.t('settings.preferences') : i18n.t('settings.settings'),
@@ -117,14 +137,17 @@ function buildMenu (ctx) {
         buildCheckbox(AUTO_LAUNCH_KEY, 'settings.launchOnStartup'),
         buildCheckbox(AUTO_LAUNCH_WEBUI_KEY, 'settings.openWebUIAtLaunch'),
         buildCheckbox(AUTO_GC_KEY, 'settings.automaticGC'),
+        buildCheckbox(IPFS_PATH_KEY, 'settings.ipfsCommandLineTools'),
         buildCheckbox(SCREENSHOT_KEY, 'settings.takeScreenshotShortcut'),
+        buildCheckbox(DOWNLOAD_KEY, 'settings.downloadHashShortcut'),
         { type: 'separator' },
         {
           label: i18n.t('settings.experiments'),
           enabled: false
         },
         buildCheckbox(PUBSUB_KEY, 'settings.pubsub'),
-        buildCheckbox(NAMESYS_PUBSUB_KEY, 'settings.namesysPubsub')
+        buildCheckbox(NAMESYS_PUBSUB_KEY, 'settings.namesysPubsub'),
+        buildCheckbox(NPM_IPFS_KEY, 'settings.npmOnIpfs')
       ]
     },
     {
@@ -229,14 +252,9 @@ function icon (color) {
   return path.join(dir, `${color}-22Template.png`)
 }
 
-// Ok this one is pretty ridiculous:
-// Tray must be global or it will break due to GC:
-// https://www.electronjs.org/docs/faq#my-apps-tray-disappeared-after-a-few-minutes
-let tray = null
-
 module.exports = function (ctx) {
   logger.info('[tray] starting')
-  tray = new Tray(icon(off))
+  const tray = new Tray(icon(off))
   let menu = null
 
   const state = {
@@ -305,6 +323,7 @@ module.exports = function (ctx) {
 
     menu.getMenuItemById(AUTO_LAUNCH_KEY).enabled = supportsLaunchAtLogin()
     menu.getMenuItemById('takeScreenshot').enabled = status === STATUS.STARTING_FINISHED
+    menu.getMenuItemById('downloadCid').enabled = status === STATUS.STARTING_FINISHED
 
     menu.getMenuItemById('moveRepositoryLocation').enabled = !gcRunning && status !== STATUS.STOPPING_STARTED
     menu.getMenuItemById('runGarbageCollector').enabled = menu.getMenuItemById('ipfsIsRunning').visible && !gcRunning
@@ -326,6 +345,7 @@ module.exports = function (ctx) {
     for (const key of CONFIG_KEYS) {
       const enabled = store.get(key, false)
       menu.getMenuItemById(key).checked = enabled
+      menu.getMenuItemById(key).visible = !DEPRECATED_KEYS.has(key) || enabled
     }
 
     if (!IS_MAC && !IS_WIN) {

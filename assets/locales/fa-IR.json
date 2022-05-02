@@ -40,13 +40,13 @@
   "restartIpfsDesktop": "ری استارت IPFS Desktop",
   "openLogs": "بازکردن گزارش ها",
   "takeScreenshot": "گرفتن اسکرین شات",
+  "downloadCid": "بارگیری...",
   "moveRepositoryLocation": "انتقال مکان مخزن",
   "runGarbageCollector": "اجرا بازیابی حافظه",
   "selectDirectory": "انتخاب دایرکتوری",
   "customIpfsBinary": "باینری IPFS سفارشی",
   "setCustomIpfsBinary": "تنظیم باینری IPFS سفارشی",
   "clearCustomIpfsBinary": "پاک کردن باینری IPFS سفارشی",
-  "openCliDocumentation": "Open CLI Documentation",
   "polkitDialog": {
     "title": "Polkit یافت نشد",
     "message": "IPFS بدون عامل Polkit  نمیتواند به /usr/local/bin/ اضافه شود."
@@ -105,11 +105,11 @@
   },
   "itemsAddedNotification": {
     "title": "ایتم ها اضافه شد",
-    "message": "{ count } items added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "{ count } موارد اضافه شده به گره شما. یک پیوند قابل اشتراک گذاری در کلیپ بورد شما کپی شد. برای دیدن فایل های خود اینجا را کلیک کنید."
   },
   "itemAddedNotification": {
     "title": "ایتم اضافه شد",
-    "message": "Item added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "آیتم به گره شما اضافه شد. یک پیوند قابل اشتراک در کلیپ بورد شما کپی شد. برای دیدن فایل خود اینجا را کلیک کنید."
   },
   "itemsFailedNotification": {
     "title": "آیتم اضافه نشد",
@@ -128,14 +128,13 @@
     "message": "بارگیری بروزرسانی امکان پذیر نیست.\nلطفاً اتصال اینترنت خود را بررسی کرده و دوباره امتحان کنید."
   },
   "updateDownloadedDialog": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available. Would you like to install it now?",
-    "later": "Later",
-    "now": "Install now"
+    "title": "بروزرسانی بارگیری شد",
+    "message": "بارگیری نسخه { version } انجام شده. \n برای نصب  بروزرسانی ، لطفاً IPFS Desktop را مجدداً راه اندازی کنید.",
+    "action": "ری استارت"
   },
   "updateDownloadedNotification": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available."
+    "title": "بروزرسانی بارگیری شد",
+    "message": "به روزرسانی نسخه { version } IPFS Desktop بارگیری شده. برای نصب روی این اعلان کلیک کنید."
   },
   "runGarbageCollectorWarning": {
     "title": "بازیابی حافظه",
@@ -150,9 +149,35 @@
     "title": "انتقال مخزن",
     "message": "مخزن از \"{ currDir }\" به \"{ newDir }\" منتقل نشد."
   },
+  "cantAddIpfsToPath": {
+    "title": "ّIPFS دراین مکان",
+    "message": "نمی توان IPFS را به این مکان اضافه کرد."
+  },
   "runGarbageCollectorErrored": {
     "title": "بازیابی حافظه",
     "message": "عملیات بازیابی حافظه با موفقیت انجام نشد."
+  },
+  "downloadCidContentDialog": {
+    "title": "بارگیری یک دایرکتوری محلی",
+    "message": "مسیر CID ، IPFS یا مسیر IPNS را وارد کنید:",
+    "action": "بعدی"
+  },
+  "cantResolveCidDialog": {
+    "title": "خطا",
+    "message": "قادر به رفع کردن نیست \"{ path }\"."
+  },
+  "couldNotGetCidDialog": {
+    "title": "خطا",
+    "message": "فرایند واکشی \"{ path }\" امکان پذیر نیست."
+  },
+  "contentsSavedDialog": {
+    "title": "موفقیت",
+    "message": "محتویات \"{ path }\" با موفقیت بارگیری شد.",
+    "action": "مشاهده فایل ها"
+  },
+  "couldNotSaveDialog": {
+    "title": "نوشتن روی دیسک امکان پذیر نیست",
+    "message": "خطایی در نوشتن \"{ dir }\" وجود داشت: \"{ error }\". لطفاً دوباره امتحان کنید یا لاگ ها را برای جزئیات بیشتر بررسی کنید."
   },
   "launchAtLoginNotSupported": {
     "title": "خطا",
@@ -162,9 +187,36 @@
     "title": "خطا",
     "message": "راه اندازی هنگام ورود روی سیستم شما امکان پذیر نیست."
   },
+  "enableIpfsOnPath": {
+    "title": "فعال کردن IPFS در مکان",
+    "message": "با فعال کردن این گزینه ، IPFS با دستور \"ipfs\" در خط فرمان شما در دسترس خواهد بود. این عمل قابل برگشت است.",
+    "action": "فعال"
+  },
+  "disableIpfsOnPath": {
+    "title": "غیرفعال کردن IPFS در مکان",
+    "message": "با غیرفعال کردن این گزینه ، IPFS دیگر در خط فرمان شما با عنوان \"ipfs\" در دسترس نخواهد بود.",
+    "action": "غیرفعال"
+  },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "فعال کردن میانبر اسکرین شات",
     "message": "با فعال کردن این گزینه ،‌ میانبر\"{ accelerator }\"  برای گرفتن اسکرین شات از صفحه تا زمانی که IPFS Desktop در حال اجرا است ، در دسترس خواهد بود. "
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "فعال کردن میانبر بارگیری",
+    "message": "با فعال کردن این گزینه ، میانبر \"{ accelerator }\" برای بارگیری پرونده ها تا زمانی که IPFS Desktop در حال اجرا است ، در دسترس خواهد بود."
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "npm را روی IPFS نصب کنید",
+    "message": "این ویژگی آزمایشی بسته \"ipfs-npm\" را بر روی سیستم شما نصب می کند. این بسته نیاز به نصب Node.js دارد.",
+    "action": "نصب"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "خطا",
+    "message": "نصب بسته \"ipfs-npm\" بر روی سیستم شما امکان پذیر نبود. لطفاً برای کسب اطلاعات بیشتر لاگ ها را بررسی کنید یا با اجرای \"npm install -g ipfs-npm\" در خط فرمان خود ، آن را به صورت دستی نصب کنید."
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "خطا",
+    "message": "حذف بسته \"ipfs-npm\" بر روی سیستم شما امکان پذیر نبود. لطفاً برای اطلاعات بیشتر لاگ های مربوطه را بررسی کنید یا با اجرای \"npm uninstall -g ipfs-npm\" در خط فرمان خود ، آن را به صورت دستی حذف کنید."
   },
   "settings": {
     "settings": "تنظیمات",
@@ -176,7 +228,9 @@
     "pubsub": "فعال کردن PubSub",
     "namesysPubsub": "فعال کردن IPNS از طریق PubSub",
     "automaticGC": "بازیابی حافظه خودکار",
+    "ipfsCommandLineTools": "ابزارهای خط فرمان",
     "takeScreenshotShortcut": "میانبر اصلی اسکرین شات",
+    "downloadHashShortcut": "میانبر اصلی بارگیری",
     "experiments": "آزمایش",
     "npmOnIpfs": "فعال کردن npm در IPFS"
   },
@@ -191,24 +245,5 @@
   "clearCustomIpfsBinarySuccess": {
     "title": "پاک کردن فایل باینری سفارشی IPFS",
     "message": "فایل باینری سفارشی IPFS پاک شد. برای شروع استفاده از نسخه پکیج شده IPFS ، ابتدا باید IPFS دوباره راه اندازی شود."
-  },
-  "unresponsiveWindowDialog": {
-    "title": "IPFS Desktop became unresponsive",
-    "message": "Ongoing operation is taking more resources than expected. Do you wish to abort, and forcefully reload the interface?",
-    "forceReload": "Yes, reload",
-    "doNothing": "Do nothing"
-  },
-  "migrationDialog": {
-    "title": "IPFS Desktop Migration",
-    "message": "One moment! IPFS Desktop needs to run the latest data store migrations:",
-    "closeAndContinue": "Continue in the background"
-  },
-  "startupFailedDialog": {
-    "title": "IPFS Desktop Startup Has Failed",
-    "message": "IPFS node has encountered an error and startup could not be completed:"
-  },
-  "invalidRepositoryDialog": {
-    "title": "Invalid IPFS Repository or Configuration File",
-    "message": "The repository at “{ path }” is invalid. The “config” file must be a valid JSON.\n\nBefore starting IPFS Desktop again, please fix the configuration file or rename the old repository to “.ipfs.backup”."
   }
 }

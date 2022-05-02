@@ -40,13 +40,13 @@
   "restartIpfsDesktop": "Az IPFS asztali programjának újraindítása",
   "openLogs": "A logok megnyitása",
   "takeScreenshot": "Készíts képernyőképet",
+  "downloadCid": "Letöltés...",
   "moveRepositoryLocation": "A tároló helyének áthelyezése",
   "runGarbageCollector": "Futtasd a lomtárat",
   "selectDirectory": "Válassz könyvtárat",
   "customIpfsBinary": "Saját IPFS bináris",
   "setCustomIpfsBinary": "Állíts be saját IPFS binárist",
   "clearCustomIpfsBinary": "A saját IPFS bináris törlése",
-  "openCliDocumentation": "Open CLI Documentation",
   "polkitDialog": {
     "title": "A Poolkit nem található",
     "message": "Az IPFS nem adható hozzá a /usr/local/bin/ ügynök nélkül."
@@ -105,11 +105,11 @@
   },
   "itemsAddedNotification": {
     "title": "Elemek hozzáadva",
-    "message": "{ count } items added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "{ count }tétel hozzáadtunk a csomópontodhoz. A megosztható linket a vágólapra másoltuk. A fájlok megnézéséhez kattints ide."
   },
   "itemAddedNotification": {
     "title": "Elem hozzáadva",
-    "message": "Item added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "Új tétel adtunk hozzá a csomópontodhoz. A megosztható linket a vágólapra  másoltuk. A fájl megnézéséhez kattints ide."
   },
   "itemsFailedNotification": {
     "title": "Hibásak a hozzáadott tételek",
@@ -128,14 +128,13 @@
     "message": "Nem tudtuk letölteni a frissítést. Kérlek ellenőrizd az internet hozzáférésed és próbáld meg újra."
   },
   "updateDownloadedDialog": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available. Would you like to install it now?",
-    "later": "Later",
-    "now": "Install now"
+    "title": "Frissítés letöltve",
+    "message": "A frissítés a { version }verzióhoz letöltve. A telepítéshez kérlek indítsd újra az IPFS Desktop-ot.",
+    "action": "Újraindítás"
   },
   "updateDownloadedNotification": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available."
+    "title": "Frissítés letöltve",
+    "message": "Frissítés a { version } letöltött IPFS Desktop verzióhoz. Kattintson erre az értesítésre a telepítéshez."
   },
   "runGarbageCollectorWarning": {
     "title": "Szemetes",
@@ -150,9 +149,35 @@
     "title": "A tároló áthelyezve",
     "message": "Nem sikerült áthelyezni a repositoryt \"{ currDir }\" -ról \"{ newDir }\" -re."
   },
+  "cantAddIpfsToPath": {
+    "title": "Az IPFS a PATH-ban van.",
+    "message": "Az IPFS-t nem tudtuk a PATH-hoz hozzáadni."
+  },
   "runGarbageCollectorErrored": {
     "title": "Szemetes",
     "message": "A hulladékgyűjtőt nem sikerült sikeresen befejezni."
+  },
+  "downloadCidContentDialog": {
+    "title": "Letöltés a saját tárhelyre",
+    "message": "Add meg a CID-t, az IPFS útvonalat, vagy az IPNS elérést:",
+    "action": "Következő"
+  },
+  "cantResolveCidDialog": {
+    "title": "Hiba",
+    "message": "Nem tudjuk feloldani. { path }"
+  },
+  "couldNotGetCidDialog": {
+    "title": "Hiba",
+    "message": "Nem tudjuk olvasni: { path }"
+  },
+  "contentsSavedDialog": {
+    "title": "Sikerült",
+    "message": "A(z) { path } alatt lévő tartalmat sikeresen letöltöttük.",
+    "action": "Nézd meg a fájlokat"
+  },
+  "couldNotSaveDialog": {
+    "title": "Nem tudok írni a lemezre",
+    "message": "There was an error writing to \"{ dir }\": \"{ error }\". Please try again or inspect logs for more details."
   },
   "launchAtLoginNotSupported": {
     "title": "Hiba",
@@ -162,9 +187,36 @@
     "title": "Hiba",
     "message": "A bejelentkezéskor történő indítást nem lehetett engedélyezni a számítógépen."
   },
+  "enableIpfsOnPath": {
+    "title": "Az IPSF enegdélyezése a PATH-ban.",
+    "message": "Ha engedélyezed ezt az opciót, akkor az IPFS elérhető lesz a parancssorból, mint \"ipfs\". Ez a beállítás visszavonható.",
+    "action": "Engedélyezés"
+  },
+  "disableIpfsOnPath": {
+    "title": "Letiltottuk az IPFS-t a PATH-ban.",
+    "message": "Ha kikapcsolod ezt az opciót, akkor az IPFS többé nem lesz elérhető a parancssorból, mint \"ipfs\".",
+    "action": "Letiltás"
+  },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "A képernyőmentés parancs engedélyezve",
     "message": "Ennek a parancsikonnak az engedélyezésével a \"{ accelerator }\" parancsikon elérhető lesz képernyőképeket készíteni mindaddig, amíg az IPFS Desktop fut."
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "A letöltési parancs engedélyezve",
+    "message": "Ennek engedélyezésével a \"{ accelerator }\" parancsikon elérhető lesz a fájlok letöltésére mindaddig, amíg az IPFS Desktop fut."
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "Az npm telepítése az IPFS-re",
+    "message": "Ez a kísérleti szolgáltatás telepíti az \"ipfs-npm\" csomagot a rendszerére. A Node.js telepítéséhez szükség van!",
+    "action": "Telepítés"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "Hiba",
+    "message": "Nem lehetett telepíteni az \"ipfs-npm\" csomagot a rendszerére. Kérjük, ellenőrizze a naplókat további információkért, vagy próbálja meg manuálisan telepíteni, futtatva a \"npm install -g ipfs-npm\" parancsot."
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "Hiba",
+    "message": "Nem lehet eltávolítani az \"ipfs-npm\" csomagot a rendszeren. További információkért ellenőrizze a naplókat, vagy próbálja meg manuálisan eltávolítani, futtatva a \"npm uninstall -g ipfs-npm\" parancsot."
   },
   "settings": {
     "settings": "Beállítások",
@@ -176,7 +228,9 @@
     "pubsub": "Enable PubSub",
     "namesysPubsub": "Enable IPNS over PubSub",
     "automaticGC": "Automatic Garbage Collection",
+    "ipfsCommandLineTools": "Parancssori eszközök",
     "takeScreenshotShortcut": "Központi képernyőmentési parancs",
+    "downloadHashShortcut": "Központi letöltési parancs",
     "experiments": "Experiments",
     "npmOnIpfs": "Enable npm on IPFS"
   },
@@ -191,24 +245,5 @@
   "clearCustomIpfsBinarySuccess": {
     "title": "A saját IPFS bináris törlése",
     "message": "Az egyéni IPFS bináris fájl törlődött. A kötegelt IPFS-verzió használatának megkezdéséhez az IPFS-t először újra kell indítani."
-  },
-  "unresponsiveWindowDialog": {
-    "title": "IPFS Desktop became unresponsive",
-    "message": "Ongoing operation is taking more resources than expected. Do you wish to abort, and forcefully reload the interface?",
-    "forceReload": "Yes, reload",
-    "doNothing": "Do nothing"
-  },
-  "migrationDialog": {
-    "title": "IPFS Desktop Migration",
-    "message": "One moment! IPFS Desktop needs to run the latest data store migrations:",
-    "closeAndContinue": "Continue in the background"
-  },
-  "startupFailedDialog": {
-    "title": "IPFS Desktop Startup Has Failed",
-    "message": "IPFS node has encountered an error and startup could not be completed:"
-  },
-  "invalidRepositoryDialog": {
-    "title": "Invalid IPFS Repository or Configuration File",
-    "message": "The repository at “{ path }” is invalid. The “config” file must be a valid JSON.\n\nBefore starting IPFS Desktop again, please fix the configuration file or rename the old repository to “.ipfs.backup”."
   }
 }

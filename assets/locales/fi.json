@@ -40,13 +40,13 @@
   "restartIpfsDesktop": "Käynnistä 'IPFS Desktop' uudelleen",
   "openLogs": "Avaa loki",
   "takeScreenshot": "Ota kuvakaappaus",
+  "downloadCid": "Lataa...",
   "moveRepositoryLocation": "Siirrä säilöpaikan sijaintia",
   "runGarbageCollector": "Suorita roskankerääjä",
   "selectDirectory": "Valitse hakemisto",
   "customIpfsBinary": "Muokattu IPFS-binääri",
   "setCustomIpfsBinary": "Aseta muokattu IPFS-binääri",
   "clearCustomIpfsBinary": "Tyhjennä muokattu IPFS-binääri",
-  "openCliDocumentation": "Open CLI Documentation",
   "polkitDialog": {
     "title": "'Polkit' ei löydettävissä",
     "message": "IPFS:ää ei voida lisätä kansioon /usr/local/bin/ ilman 'polkit'-agenttia"
@@ -105,11 +105,11 @@
   },
   "itemsAddedNotification": {
     "title": "Items added",
-    "message": "{ count } items added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "{ count } items added to your node. A shareable link was copied to your clipboard. Click here to see your files."
   },
   "itemAddedNotification": {
     "title": "Item added",
-    "message": "Item added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "Item added to your node. A shareable link was copied to your clipboard. Click here to see your file."
   },
   "itemsFailedNotification": {
     "title": "Epäonnistuttiin lisäämään kohteita",
@@ -128,14 +128,13 @@
     "message": "It was not possible to download the update. Please check your Internet connection and try again."
   },
   "updateDownloadedDialog": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available. Would you like to install it now?",
-    "later": "Later",
-    "now": "Install now"
+    "title": "Update downloaded",
+    "message": "Update for version { version } downloaded. To install the update, please restart IPFS Desktop.",
+    "action": "Käynnistä uudelleen"
   },
   "updateDownloadedNotification": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available."
+    "title": "Update downloaded",
+    "message": "Update for version { version } of IPFS Desktop downloaded. Click this notification to install."
   },
   "runGarbageCollectorWarning": {
     "title": "Roskankerääjä",
@@ -150,9 +149,35 @@
     "title": "Siirrä säilöpaikka",
     "message": "Säilöpaikkaa ei voitu siirtää sijainnista \"{ currDir }\" sijaintiin \"{ newDir }\"."
   },
+  "cantAddIpfsToPath": {
+    "title": "IPFS on PATH",
+    "message": "Could not add IPFS to the PATH."
+  },
   "runGarbageCollectorErrored": {
     "title": "Roskankerääjä",
     "message": "Roskankerääjää ei voitu suorittaa onnistuneesti."
+  },
+  "downloadCidContentDialog": {
+    "title": "Lataa paikalliseen hakemistoon",
+    "message": "Anna CID, IPFS-polku tai IPNS-polku:",
+    "action": "Seuraava"
+  },
+  "cantResolveCidDialog": {
+    "title": "Virhe",
+    "message": "Ei pystytty selvittämään polkua \"{ path }\"."
+  },
+  "couldNotGetCidDialog": {
+    "title": "Virhe",
+    "message": "Ei pystytty hakemaan polkua \"{ path }\"."
+  },
+  "contentsSavedDialog": {
+    "title": "Onnistuminen",
+    "message": "Polun \"{ path }\" sisältö ladattiin onnistuneesti.",
+    "action": "Katso tiedostot"
+  },
+  "couldNotSaveDialog": {
+    "title": "Ei voitu kirjoittaa kovalevylle",
+    "message": "There was an error writing to \"{ dir }\": \"{ error }\". Please try again or inspect logs for more details."
   },
   "launchAtLoginNotSupported": {
     "title": "Virhe",
@@ -162,9 +187,36 @@
     "title": "Virhe",
     "message": "Ei pystytty ottamaan 'Käynnistä sisäänkirjautumisen yhteydessä' käyttöön laitteellasi."
   },
+  "enableIpfsOnPath": {
+    "title": "Enable IPFS on PATH",
+    "message": "By enabling this option, IPFS will be available on your command line as \"ipfs\". This action is reversible.",
+    "action": "Ota käyttöön"
+  },
+  "disableIpfsOnPath": {
+    "title": "Disable IPFS on PATH",
+    "message": "By disabling this option, IPFS will no longer be available on your command line as \"ipfs\".",
+    "action": "Ota pois käytöstä"
+  },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Enable screenshot shortcut",
     "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as IPFS Desktop is running."
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "Enable download shortcut",
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as IPFS Desktop is running."
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "Install npm on IPFS",
+    "message": "This experimental feature installs the \"ipfs-npm\" package on your system. It requires Node.js to be installed.",
+    "action": "Install"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "Virhe",
+    "message": "It was not possible to install \"ipfs-npm\" package on your system. Please check the logs for more information or try installing it manually by running \"npm install -g ipfs-npm\" on your command line."
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "Virhe",
+    "message": "It was not possible to uninstall \"ipfs-npm\" package on your system. Please check the logs for more information or try uninstalling it manually by running \"npm uninstall -g ipfs-npm\" on your command line."
   },
   "settings": {
     "settings": "Asetukset",
@@ -176,7 +228,9 @@
     "pubsub": "Enable PubSub",
     "namesysPubsub": "Enable IPNS over PubSub",
     "automaticGC": "Automatic Garbage Collection",
+    "ipfsCommandLineTools": "Pääte työkalut",
     "takeScreenshotShortcut": "Globaali kuvakaappaus oikotie",
+    "downloadHashShortcut": "Globaali lataus oikotie",
     "experiments": "Kokeilut",
     "npmOnIpfs": "Enable npm on IPFS"
   },
@@ -191,24 +245,5 @@
   "clearCustomIpfsBinarySuccess": {
     "title": "Clear custom IPFS binary",
     "message": "The custom IPFS binary was cleared. To start using the bundled IPFS version, IPFS needs to be restarted first."
-  },
-  "unresponsiveWindowDialog": {
-    "title": "IPFS Desktop became unresponsive",
-    "message": "Ongoing operation is taking more resources than expected. Do you wish to abort, and forcefully reload the interface?",
-    "forceReload": "Yes, reload",
-    "doNothing": "Do nothing"
-  },
-  "migrationDialog": {
-    "title": "IPFS Desktop Migration",
-    "message": "One moment! IPFS Desktop needs to run the latest data store migrations:",
-    "closeAndContinue": "Continue in the background"
-  },
-  "startupFailedDialog": {
-    "title": "IPFS Desktop Startup Has Failed",
-    "message": "IPFS node has encountered an error and startup could not be completed:"
-  },
-  "invalidRepositoryDialog": {
-    "title": "Invalid IPFS Repository or Configuration File",
-    "message": "The repository at “{ path }” is invalid. The “config” file must be a valid JSON.\n\nBefore starting IPFS Desktop again, please fix the configuration file or rename the old repository to “.ipfs.backup”."
   }
 }

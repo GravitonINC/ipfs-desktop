@@ -13,7 +13,8 @@ const defaults = {
     ]
   },
   language: (electron.app || electron.remote.app).getLocale(),
-  experiments: {}
+  experiments: {},
+  syncPath: ''
 }
 
 const migrations = {

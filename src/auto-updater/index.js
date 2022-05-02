@@ -1,9 +1,11 @@
-const { shell, app, BrowserWindow, Notification } = require('electron')
+const { shell } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const i18n = require('i18next')
 const { ipcMain } = require('electron')
 const logger = require('../common/logger')
+const { notify } = require('../common/notify')
 const { showDialog } = require('../dialogs')
+const macQuitAndInstall = require('./macos-quit-and-install')
 const { IS_MAC, IS_WIN, IS_APPIMAGE } = require('../common/consts')
 
 function isAutoUpdateSupported () {
@@ -12,13 +14,14 @@ function isAutoUpdateSupported () {
   return IS_MAC || IS_WIN || IS_APPIMAGE
 }
 
-let updateNotification = null // must be a global to avoid gc
 let feedback = false
 
 function setup (ctx) {
   // we download manually in 'update-available'
   autoUpdater.autoDownload = false
-  autoUpdater.autoInstallOnAppQuit = true
+
+  // mac requires manual upgrade, other platforms work out of the box
+  autoUpdater.autoInstallOnAppQuit = !IS_MAC
 
   autoUpdater.on('error', err => {
     logger.error(`[updater] ${err.toString()}`)
@@ -90,53 +93,36 @@ function setup (ctx) {
   autoUpdater.on('update-downloaded', ({ version }) => {
     logger.info(`[updater] update to ${version} downloaded`)
 
-    const feedbackDialog = () => {
-      const opt = showDialog({
-        title: i18n.t('updateDownloadedDialog.title'),
-        message: i18n.t('updateDownloadedDialog.message', { version }),
-        type: 'info',
-        buttons: [
-          i18n.t('updateDownloadedDialog.later'),
-          i18n.t('updateDownloadedDialog.now')
-        ]
+    const { autoInstallOnAppQuit } = autoUpdater
+    const doIt = () => {
+      // Do nothing if install is handled by upstream logic
+      if (autoInstallOnAppQuit) return
+      // Else, do custom install handling
+      setImmediate(() => {
+        if (IS_MAC) macQuitAndInstall(ctx)
       })
-      if (opt === 1) { // now
-        setImmediate(async () => {
-          await beforeQuitCleanup() // just to be sure (we had regressions before)
-          autoUpdater.quitAndInstall()
-        })
-      }
     }
-    if (feedback) {
-      feedback = false
-      // when in instant feedback mode, show dialog immediatelly
-      feedbackDialog()
-    } else {
-      // show unobtrusive notification + dialog on click
-      updateNotification = new Notification({
+
+    if (!feedback) {
+      notify({
         title: i18n.t('updateDownloadedNotification.title'),
         body: i18n.t('updateDownloadedNotification.message', { version })
-      })
-      updateNotification.on('click', feedbackDialog)
-      updateNotification.show()
+      }, doIt)
     }
-  })
 
-  // In some cases before-quit event is not emitted before all windows are closed,
-  // and we need to do cleanup here
-  const beforeQuitCleanup = async () => {
-    BrowserWindow.getAllWindows().forEach(w => w.removeAllListeners('close'))
-    app.removeAllListeners('window-all-closed')
-    try {
-      const s = await ctx.stopIpfs()
-      logger.info(`[beforeQuitCleanup] stopIpfs had finished with status: ${s}`)
-    } catch (err) {
-      logger.error('[beforeQuitCleanup] stopIpfs had an error', err)
-    }
-  }
-  // built-in updater != electron-updater
-  // Added in https://github.com/electron-userland/electron-builder/pull/6395
-  require('electron').autoUpdater.on('before-quit-for-update', beforeQuitCleanup)
+    feedback = false
+
+    showDialog({
+      title: i18n.t('updateDownloadedDialog.title'),
+      message: i18n.t('updateDownloadedDialog.message', { version }),
+      type: 'info',
+      buttons: [
+        (autoInstallOnAppQuit ? i18n.t('ok') : i18n.t('updateDownloadedDialog.action'))
+      ]
+    })
+
+    doIt()
+  })
 }
 
 async function checkForUpdates () {
@@ -150,7 +136,7 @@ async function checkForUpdates () {
 }
 
 module.exports = async function (ctx) {
-  if (['test', 'development'].includes(process.env.NODE_ENV)) {
+  if (process.env.NODE_ENV === 'development') {
     ctx.manualCheckForUpdates = () => {
       showDialog({
         title: 'Not available in development',

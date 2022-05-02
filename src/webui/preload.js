@@ -64,5 +64,32 @@ contextBridge.exposeInMainWorld('ipfsDesktop', {
   }
 })
 
+contextBridge.exposeInMainWorld('desktopControls', {
+  close: () => ipcRenderer.send('window.close')
+  // greetz: () => ipcRenderer.send('window.greetz'),
+
+})
+
+contextBridge.exposeInMainWorld('ipcRenderer', {
+  ...ipcRenderer,
+  send: (channel, args) => {
+    ipcRenderer.send(channel, args)
+  },
+  // From main to render.
+  receive: (channel, listener) => {
+    ipcRenderer.on(channel, (event, ...args) => listener(...args))
+  },
+  // From render to main and back again.
+  invoke: (channel, args) => {
+    return ipcRenderer.invoke(channel, args)
+  }
+})
+
 // Inject api address
 window.localStorage.setItem('ipfsApi', urlParams.get('api'))
+
+ipcRenderer.on('request-open-sync-path', () => {
+  console.log('request-open-sync-path  on preload.js ')
+})
+
+ipcRenderer.send('sync-message', 'this is data secton', 'arg1')

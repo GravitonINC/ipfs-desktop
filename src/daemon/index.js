@@ -12,9 +12,9 @@ module.exports = async function (ctx) {
   let status = null
   let wasOnline = null
 
-  const updateStatus = (stat, id = null) => {
+  const updateStatus = (stat) => {
     status = stat
-    ipcMain.emit('ipfsd', status, id)
+    ipcMain.emit('ipfsd', status)
   }
 
   const getIpfsd = async (optional = false) => {
@@ -43,29 +43,31 @@ module.exports = async function (ctx) {
     const config = store.get('ipfsConfig')
     updateStatus(STATUS.STARTING_STARTED)
 
-    const res = await createDaemon(config)
+    if (config.path) {
+      // Updates the IPFS_PATH file. We do this every time we start up
+      // to make sure we always have that file present, even though
+      // there are installations and updates that might remove the file.
+      writeIpfsPath(config.path)
+    }
 
-    if (res.err) {
-      log.fail(res.err)
+    try {
+      ipfsd = await createDaemon(config)
+
+      // Update the path if it was blank previously.
+      // This way we use the default path when it is
+      // not set.
+      if (!config.path || typeof config.path !== 'string') {
+        config.path = ipfsd.path
+        store.set('ipfsConfig', config)
+        writeIpfsPath(config.path)
+      }
+
+      log.end()
+      updateStatus(STATUS.STARTING_FINISHED)
+    } catch (err) {
+      log.fail(err)
       updateStatus(STATUS.STARTING_FAILED)
-      return
     }
-
-    ipfsd = res.ipfsd
-
-    logger.info(`[daemon] IPFS_PATH: ${ipfsd.path}`)
-    logger.info(`[daemon] PeerID:    ${res.id}`)
-
-    // Update the path if it was blank previously.
-    // This way we use the default path when it is
-    // not set.
-    if (!config.path || typeof config.path !== 'string') {
-      config.path = ipfsd.path
-      store.set('ipfsConfig', config)
-    }
-
-    log.end()
-    updateStatus(STATUS.STARTING_FINISHED, res.id)
   }
 
   const stopIpfs = async () => {
@@ -123,3 +125,11 @@ module.exports = async function (ctx) {
 }
 
 module.exports.STATUS = STATUS
+
+function writeIpfsPath (path) {
+  fs.outputFileSync(
+    join(app.getPath('home'), './.ipfs-desktop/IPFS_PATH')
+      .replace('app.asar', 'app.asar.unpacked'),
+    path
+  )
+}

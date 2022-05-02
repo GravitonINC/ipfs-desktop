@@ -1,16 +1,14 @@
 const { extname, basename } = require('path')
 const { clipboard } = require('electron')
-const { globSource } = require('ipfs-http-client')
 const i18n = require('i18next')
-const last = require('it-last')
-const fs = require('fs-extra')
 const logger = require('./common/logger')
 const { notify, notifyError } = require('./common/notify')
+const { globSource } = require('ipfs-http-client')
 
-async function copyFileToMfs (ipfs, cid, filename) {
+async function copyFile (ipfs, cid, name) {
   let i = 0
-  const ext = extname(filename)
-  const base = basename(filename, ext)
+  const ext = extname(name)
+  const base = basename(name, ext)
 
   while (true) {
     const newName = (i === 0 ? base : `${base} (${i})`) + ext
@@ -18,55 +16,50 @@ async function copyFileToMfs (ipfs, cid, filename) {
     try {
       await ipfs.files.stat(`/${newName}`)
     } catch (err) {
-      filename = newName
+      name = newName
       break
     }
 
     i++
   }
 
-  return ipfs.files.cp(`/ipfs/${cid.toString()}`, `/${filename}`)
+  return ipfs.files.cp(`/ipfs/${cid.toString()}`, `/${name}`)
 }
 
-async function getShareableCid (ipfs, files) {
-  if (files.length === 1) {
+async function makeShareableObject (ipfs, results) {
+  if (results.length === 1) {
     // If it's just one object, we link it directly.
-    return files[0]
+    return results[0]
   }
 
-  // Note: we don't use 'object patch' here, it was deprecated.
-  // We are using MFS for creating CID of an ephemeral directory
-  // because it handles HAMT-sharding of big directories automatically
-  // See: https://github.com/ipfs/go-ipfs/issues/8106
-  const dirpath = `/zzzz_${Date.now()}`
-  await ipfs.files.mkdir(dirpath, {})
+  let baseCID = await ipfs.object.new({ template: 'unixfs-dir' })
 
-  for (const { cid, filename } of files) {
-    await ipfs.files.cp(`/ipfs/${cid}`, `${dirpath}/${filename}`)
+  for (const { cid, path, size } of results) {
+    baseCID = (await ipfs.object.patch.addLink(baseCID, {
+      name: path,
+      size,
+      cid
+    }))
   }
 
-  const stat = await ipfs.files.stat(dirpath)
-
-  await ipfs.files.rm(dirpath, { recursive: true })
-
-  return { cid: stat.cid, filename: '' }
+  return { cid: baseCID, path: '' }
 }
 
-function sendNotification (launchWebUI, hasFailures, successCount, filename) {
+function sendNotification (failures, successes, launchWebUI, path) {
   let link, title, body, fn
 
-  if (!hasFailures) {
+  if (failures.length === 0) {
     // All worked well!
     fn = notify
 
-    if (successCount === 1) {
-      link = `/files/${filename}`
+    if (successes.length === 1) {
+      link = `/files/${path}`
       title = i18n.t('itemAddedNotification.title')
       body = i18n.t('itemAddedNotification.message')
     } else {
       link = '/files'
       title = i18n.t('itemsAddedNotification.title')
-      body = i18n.t('itemsAddedNotification.message', { count: successCount })
+      body = i18n.t('itemsAddedNotification.message', { count: successes.length })
     }
   } else {
     // Some/all failed!
@@ -82,27 +75,9 @@ function sendNotification (launchWebUI, hasFailures, successCount, filename) {
   })
 }
 
-async function addFileOrDirectory (ipfs, filepath) {
-  const stat = fs.statSync(filepath)
-  let cid = null
-
-  if (stat.isDirectory()) {
-    const files = globSource(filepath, '**/*', { recursive: true })
-    const res = await last(ipfs.addAll(files, { pin: false, wrapWithDirectory: true }))
-    cid = res.cid
-  } else {
-    const readStream = fs.createReadStream(filepath)
-    const res = await ipfs.add(readStream, { pin: false })
-    cid = res.cid
-  }
-
-  const filename = basename(filepath)
-  await copyFileToMfs(ipfs, cid, filename)
-  return { cid, filename }
-}
-
 module.exports = async function ({ getIpfsd, launchWebUI }, files) {
   const ipfsd = await getIpfsd()
+
   if (!ipfsd) {
     return
   }
@@ -114,26 +89,23 @@ module.exports = async function ({ getIpfsd, launchWebUI }, files) {
 
   await Promise.all(files.map(async file => {
     try {
-      const res = await addFileOrDirectory(ipfsd.api, file)
-      successes.push(res)
+      const result = await ipfsd.api.add(globSource(file, { recursive: true }), { pin: false })
+      await copyFile(ipfsd.api, result.cid, result.path)
+      successes.push(result)
     } catch (e) {
-      failures.push(e.toString())
+      failures.push(e)
     }
   }))
 
   if (failures.length > 0) {
-    log.fail(new Error(failures.join('\n')))
+    log.fail(new Error(failures.reduce((prev, curr) => `${prev} ${curr.toString()}`, '')))
   } else {
     log.end()
   }
 
-  const { cid, filename } = await getShareableCid(ipfsd.api, successes)
-  sendNotification(launchWebUI, failures.length !== 0, successes.length, filename)
-
-  const query = filename ? `?filename=${encodeURIComponent(filename)}` : ''
-  const url = `https://dweb.link/ipfs/${cid.toString()}${query}`
-
+  const { cid, path } = await makeShareableObject(ipfsd.api, successes)
+  sendNotification(failures, successes, launchWebUI, path)
+  const filename = path ? `?filename=${encodeURIComponent(path.split('/').pop())}` : ''
+  const url = `https://dweb.link/ipfs/${cid.toString()}${filename}`
   clipboard.writeText(url)
-
-  return cid
 }

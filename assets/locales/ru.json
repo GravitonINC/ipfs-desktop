@@ -40,13 +40,13 @@
   "restartIpfsDesktop": "Перезапустить IPFS Desktop",
   "openLogs": "Открыть логи",
   "takeScreenshot": "Сделать Скриншот",
+  "downloadCid": "Загрузить...",
   "moveRepositoryLocation": "Переместить хранилище",
   "runGarbageCollector": "Запустить сборщик мусора",
   "selectDirectory": "Выбрать папку",
   "customIpfsBinary": "Пользовательский файл IPFS",
   "setCustomIpfsBinary": "Выбрать пользовательский исполняемый файл IPFS",
   "clearCustomIpfsBinary": "Очистить пользовательский исполняемый файл IPFS",
-  "openCliDocumentation": "Open CLI Documentation",
   "polkitDialog": {
     "title": "Библиотека Polkit не найдена",
     "message": "IPFS нельзя добавить в /usr/local/bin/ без агента Polkit."
@@ -105,11 +105,11 @@
   },
   "itemsAddedNotification": {
     "title": "Добавленные элементы",
-    "message": "{ count } items added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "{ count } элементы добавлены в ваш узел. Общая ссылка была скопирована в буфер обмена. Нажмите здесь, чтобы просмотреть ваши файлы."
   },
   "itemAddedNotification": {
     "title": "Элемент добавлен",
-    "message": "Item added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "Элемент добавлен в ваш узел. Общая ссылка была скопирована в буфер обмена. Нажмите здесь, чтобы просмотреть ваш файл."
   },
   "itemsFailedNotification": {
     "title": "Не удалось добавить элементы",
@@ -128,14 +128,13 @@
     "message": "Невозможно загрузить обновление. Проверьте соединение с интернетом и попробуйте еще раз."
   },
   "updateDownloadedDialog": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available. Would you like to install it now?",
-    "later": "Later",
-    "now": "Install now"
+    "title": "Обновление загружено",
+    "message": "Обновление до версии { version }загружено. Для установки обновления перезапустите IPFS Desktop.",
+    "action": "Перезапуск"
   },
   "updateDownloadedNotification": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available."
+    "title": "Обновление загружено",
+    "message": "Обновление версии { version } IPFS Desktop загружено. Нажмите на уведомление для установки."
   },
   "runGarbageCollectorWarning": {
     "title": "Сборщик мусора",
@@ -150,9 +149,35 @@
     "title": "Переместить репозиторий",
     "message": "Не могу переместить репозиторий из \"{ currDir }\" в \"{ newDir }\"."
   },
+  "cantAddIpfsToPath": {
+    "title": "IPFS в переменной PATH",
+    "message": "Не могу добавить IPFS в переменную PATH"
+  },
   "runGarbageCollectorErrored": {
     "title": "Сборщик мусора",
     "message": "Сборка мусора не может быть успешно завершена."
+  },
+  "downloadCidContentDialog": {
+    "title": "Загрузить в локальную папку",
+    "message": "Введите CID, путь IPFS, или путь IPNS:",
+    "action": "Далее"
+  },
+  "cantResolveCidDialog": {
+    "title": "Ошибка",
+    "message": "Невозможно найти \"{ path }\""
+  },
+  "couldNotGetCidDialog": {
+    "title": "Ошибка",
+    "message": "Невозможно загрузить \"{ path }\""
+  },
+  "contentsSavedDialog": {
+    "title": "Успешно",
+    "message": "Содержимое из \"{ path }\" успешно загружено",
+    "action": "Просмотр файлов"
+  },
+  "couldNotSaveDialog": {
+    "title": "Не могу записать на диск",
+    "message": "There was an error writing to \"{ dir }\": \"{ error }\". Please try again or inspect logs for more details."
   },
   "launchAtLoginNotSupported": {
     "title": "Ошибка",
@@ -162,9 +187,36 @@
     "title": "Ошибка",
     "message": "Запуск при входе не может быть включен на этом компьютере."
   },
+  "enableIpfsOnPath": {
+    "title": "Разрешить IPFS из переменной PATH",
+    "message": "Включив эту опцию, IPFS будет доступен в вашей командной строке как \"ipfs\". Это действие обратимо.",
+    "action": "Разрешить"
+  },
+  "disableIpfsOnPath": {
+    "title": "Запретить IPFS из переменной PATH",
+    "message": "Выключив эту опцию, IPFS не будет доступен в вашей командной строке как \"ipfs\". ",
+    "action": "Запретить"
+  },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Разрешить сочетание клавиш для снимка экрана",
     "message": "При включении, расширение \"{ accelerator }\" будет делать скриншоты все время, пока запущен IPFS Desktop."
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "Разрешить сочетание клавиш для загрузки",
+    "message": "При включении, расширение \"{ accelerator }\" будет загружать файлы все время, пока запущен IPFS Desktop."
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "Установить npm on IPFS",
+    "message": "Экспериментальная функция: пакет \"ipfs-npm\" установится на вашу систему. Для этого требуется установленный Node.js.",
+    "action": "Установить"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "Ошибка",
+    "message": "Невозможно установить пакет \"ipfs-npm\". Проверьте лог-файлы для дополнительной информации или установите пакет вручную, набрав \"npm install -g ipfs-npm\" в командной строке."
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "Ошибка",
+    "message": "Невозможно удалить пакет \"ipfs-npm\". Проверьте лог-файлы для дополнительной информации или удалите пакет вручную, набрав \"npm uninstall -g ipfs-npm\" в командной строке."
   },
   "settings": {
     "settings": "Настройки",
@@ -176,7 +228,9 @@
     "pubsub": "Активировать PubSub",
     "namesysPubsub": "Активировать IPNS через PubSub",
     "automaticGC": "Автоматическая сборка мусора",
+    "ipfsCommandLineTools": "Утилиты командной строки",
     "takeScreenshotShortcut": "Сочетание клавиш для скриншотов",
+    "downloadHashShortcut": "Сочетание клавиш для загрузок",
     "experiments": "Эксперименты",
     "npmOnIpfs": "Активировать npm на IPFS"
   },
@@ -191,24 +245,5 @@
   "clearCustomIpfsBinarySuccess": {
     "title": "Очистить пользовательский исполняемый файл IPFS",
     "message": "Кастомный исполняемый файл IPFS более не используется. Чтобы начать использовать включенную в состав версию IPFS, IPFS нужно перезапустить."
-  },
-  "unresponsiveWindowDialog": {
-    "title": "IPFS Desktop became unresponsive",
-    "message": "Ongoing operation is taking more resources than expected. Do you wish to abort, and forcefully reload the interface?",
-    "forceReload": "Yes, reload",
-    "doNothing": "Do nothing"
-  },
-  "migrationDialog": {
-    "title": "IPFS Desktop Migration",
-    "message": "One moment! IPFS Desktop needs to run the latest data store migrations:",
-    "closeAndContinue": "Continue in the background"
-  },
-  "startupFailedDialog": {
-    "title": "IPFS Desktop Startup Has Failed",
-    "message": "IPFS node has encountered an error and startup could not be completed:"
-  },
-  "invalidRepositoryDialog": {
-    "title": "Invalid IPFS Repository or Configuration File",
-    "message": "The repository at “{ path }” is invalid. The “config” file must be a valid JSON.\n\nBefore starting IPFS Desktop again, please fix the configuration file or rename the old repository to “.ipfs.backup”."
   }
 }

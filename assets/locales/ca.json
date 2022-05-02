@@ -40,13 +40,13 @@
   "restartIpfsDesktop": "Reiniciar IPFS d'Escriptori",
   "openLogs": "Obrir el registre",
   "takeScreenshot": "Fes una captura de pantalla",
+  "downloadCid": "Descarrega...",
   "moveRepositoryLocation": "Moure l'emplaçament del repositori",
   "runGarbageCollector": "Inicia el recollidor de brossa",
   "selectDirectory": "Selecciona un directori",
   "customIpfsBinary": "Binari d'IPFS personalitzat",
   "setCustomIpfsBinary": "Personalitza el binari d'IPFS",
   "clearCustomIpfsBinary": "Treu el binari d'IPFS personalitzat",
-  "openCliDocumentation": "Open CLI Documentation",
   "polkitDialog": {
     "title": "No s'ha trobat el Polkit",
     "message": "No es pot afegir IPFS a /usr/local/bin/ sense l'agent polkit."
@@ -105,11 +105,11 @@
   },
   "itemsAddedNotification": {
     "title": "Elements afegits",
-    "message": "{ count } items added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "{ count } elements afegits al vostre node. S'ha copiat un enllaç compartible al vostre porta-retalls. Clica aquí per veure els vostres arxius."
   },
   "itemAddedNotification": {
     "title": "Element afegit",
-    "message": "Item added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "Element afegit al vostre node. S'ha copiat un enllaç compartible al vostre porta-retalls. Clica aquí per veure l'arxiu."
   },
   "itemsFailedNotification": {
     "title": "No s'han pogut afegir els elements",
@@ -128,14 +128,13 @@
     "message": "No ha estat possible descarregar l'actualització. Si us plau, comproveu la connexió a internet i proveu-ho de nou."
   },
   "updateDownloadedDialog": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available. Would you like to install it now?",
-    "later": "Later",
-    "now": "Install now"
+    "title": "Actualització descarregada",
+    "message": "S'ha descarregat l'actualització de la versió { version }. Per instal·lar-la, si us plau reinicieu l'IPFS d'Escriptori.",
+    "action": "Reiniciar"
   },
   "updateDownloadedNotification": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available."
+    "title": "Actualització descarregada",
+    "message": "S'ha descarregat l'actualització de la versió { version }de l'IPFS d'Escriptori. Cliqui aquesta notificació per instal·lar-la."
   },
   "runGarbageCollectorWarning": {
     "title": "Recollidor de brossa",
@@ -150,9 +149,35 @@
     "title": "Mou el repositori",
     "message": "No s'ha pogut moure el repositori de \"{ currDir }\" a \"{ newDir }\"."
   },
+  "cantAddIpfsToPath": {
+    "title": "IPFS a la RUTA",
+    "message": "No s'ha pogut afegir IPFS a la RUTA."
+  },
   "runGarbageCollectorErrored": {
     "title": "Recollidor de brossa",
     "message": "No s'ha pogut passar el recollidor de brossa de forma satisfactòria."
+  },
+  "downloadCidContentDialog": {
+    "title": "Descarrega a un directori local",
+    "message": "Introdueixi un CID, un camí IPFS, o un camí IPNS:",
+    "action": "Següent"
+  },
+  "cantResolveCidDialog": {
+    "title": "Error",
+    "message": "No s'ha pogut resoldre \"{ path }\"."
+  },
+  "couldNotGetCidDialog": {
+    "title": "Error",
+    "message": "No s'ha pogut portar \"{ path }\"."
+  },
+  "contentsSavedDialog": {
+    "title": "Completat",
+    "message": "Els continguts de \"{ path }\" han sigut descarregats satisfactòriament.",
+    "action": "Mostra els fitxers"
+  },
+  "couldNotSaveDialog": {
+    "title": "No s'ha pogut escriure al disc",
+    "message": "Hi ha hagut un error a \"  { dir }\":\" { error }\". Si us plau, torneu-ho a provar o reviseu els registres per més informació."
   },
   "launchAtLoginNotSupported": {
     "title": "Error",
@@ -162,9 +187,36 @@
     "title": "Error",
     "message": "No s'ha pogut habilitar l'arrencada a l'iniciar sessió al vostre aparell."
   },
+  "enableIpfsOnPath": {
+    "title": "Habilita IPFS a PATH",
+    "message": "Habilitant aquesta opció, IPFS estarà disponible al terminal d'ordres com a \"ipfs\" . Aquesta acció és reversible.",
+    "action": "Activa"
+  },
+  "disableIpfsOnPath": {
+    "title": "Deshabilita IPFS a PATH",
+    "message": "Deshabilitant aquesta opció, IPFS deixarà d'estar disponible al terminal d'ordres com a \"ipfs\".",
+    "action": "Inhabilita"
+  },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Habilita la drecera de teclat per fer captures de pantalla",
     "message": "Habilitant això, la dracera de teclat \"{ accelerator }\" podrà fer captures de pantalla mentre funcioni l'IPFS d'Escriptori."
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "Habilita la drecera de teclat per a descarregar",
+    "message": "Habilitant això, la dracera de teclat \"{ accelerator }\" podrà descarregar arxius mentre funcioni l'IPFS d'Escriptori."
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "Instalar npm a IPFS",
+    "message": "Aquesta opció experimental instal·larà el paquet \"ipfs-npm\" al vostre sistema. És necessari que Node.js estigui instalat.",
+    "action": "Instala"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "Error",
+    "message": "No ha estat possible instalar el paquet \"ipfs-npm\" al vostre sistema. Per més informació, si us plau comproveu el registre o proveu d'instalar-lo manualment executant \"npm install -g ipfs-npm\" al vostre terminal d'ordres."
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "Error",
+    "message": "No ha estat possible desinstalar el paquet \"ipfs-npm\" del vostre sistema. Per més informació, si us plau comproveu el registre o proveu de desinstalar-lo manualment executant \"npm uninstall -g ipfs-npm\" al vostre terminal d'ordres."
   },
   "settings": {
     "settings": "Configuració",
@@ -176,7 +228,9 @@
     "pubsub": "Activa PubSub",
     "namesysPubsub": "Activa l'IPNS sobre PubSub",
     "automaticGC": "Recollidor de brossa Automatica",
+    "ipfsCommandLineTools": "Eines del terminal d'ordres",
     "takeScreenshotShortcut": "Drecera de teclat de captura de pantalla general",
+    "downloadHashShortcut": "Drecera de teclat de descarrega general",
     "experiments": "Experimental",
     "npmOnIpfs": "Activa npm a IPFS"
   },
@@ -191,24 +245,5 @@
   "clearCustomIpfsBinarySuccess": {
     "title": "Neteja el binari d'IPFS personalitzat",
     "message": "El binari d'IPFS personalitzat ha estat netejat. Per començar a utilitzar la versió d'IPFS vinculada, primer cal que IPFS es reinici."
-  },
-  "unresponsiveWindowDialog": {
-    "title": "IPFS Desktop became unresponsive",
-    "message": "Ongoing operation is taking more resources than expected. Do you wish to abort, and forcefully reload the interface?",
-    "forceReload": "Yes, reload",
-    "doNothing": "Do nothing"
-  },
-  "migrationDialog": {
-    "title": "IPFS Desktop Migration",
-    "message": "One moment! IPFS Desktop needs to run the latest data store migrations:",
-    "closeAndContinue": "Continue in the background"
-  },
-  "startupFailedDialog": {
-    "title": "IPFS Desktop Startup Has Failed",
-    "message": "IPFS node has encountered an error and startup could not be completed:"
-  },
-  "invalidRepositoryDialog": {
-    "title": "Invalid IPFS Repository or Configuration File",
-    "message": "The repository at “{ path }” is invalid. The “config” file must be a valid JSON.\n\nBefore starting IPFS Desktop again, please fix the configuration file or rename the old repository to “.ipfs.backup”."
   }
 }

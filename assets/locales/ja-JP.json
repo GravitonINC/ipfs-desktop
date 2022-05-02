@@ -40,13 +40,13 @@
   "restartIpfsDesktop": "IPFSデスクトップを再起動する",
   "openLogs": "ログを開く",
   "takeScreenshot": "スクリーンショットを撮ります",
+  "downloadCid": "ダウンロード...",
   "moveRepositoryLocation": "リポジトリの場所を移動",
   "runGarbageCollector": "ゴミコレクターを実行",
   "selectDirectory": "ディレクトリを選択",
   "customIpfsBinary": "カスタム IPFS バイナリ",
   "setCustomIpfsBinary": "カスタム IPFS バイナリをセット",
   "clearCustomIpfsBinary": "カスタム IPFS バイナリをクリア",
-  "openCliDocumentation": "Open CLI Documentation",
   "polkitDialog": {
     "title": "Polkitが見つかりません",
     "message": "IPFSは、polkitエージェントなしでは/usr/local/bin/に追加できません。"
@@ -105,11 +105,11 @@
   },
   "itemsAddedNotification": {
     "title": "複数アイテムが追加されました",
-    "message": "{ count } items added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "{ count } 個のアイテムがノードに追加されました。共有可能なリンクがクリップボードにコピーされました。ファイルを見るにはここをクリックしてください。"
   },
   "itemAddedNotification": {
     "title": "ひとつのアイテムが追加されました",
-    "message": "Item added to your IPFS node. A shareable link was copied to your clipboard."
+    "message": "ひとつのアイテムがノードに追加されました。共有可能なリンクがクリップボードにコピーされました。ファイルを見るにはここをクリックしてください。"
   },
   "itemsFailedNotification": {
     "title": "複数アイテムを追加できませんでした",
@@ -128,14 +128,13 @@
     "message": "更新に失敗しました。インターネット接続を確認して、もう一度お試しください。"
   },
   "updateDownloadedDialog": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available. Would you like to install it now?",
-    "later": "Later",
-    "now": "Install now"
+    "title": "更新のダウンロード完了",
+    "message": "バージョン{ version }更新のダウンロード完了。インストールするのに、IPFSデスクトップを再起動して下さい。",
+    "action": "再開"
   },
   "updateDownloadedNotification": {
-    "title": "IPFS Desktop Update",
-    "message": "An update to IPFS Desktop { version } is available."
+    "title": "更新のダウンロード完了",
+    "message": "バージョン{ version }更新のダウンロード完了。インストールするのに、この通知をクリックして下さい。"
   },
   "runGarbageCollectorWarning": {
     "title": "ゴミコレクター",
@@ -150,9 +149,35 @@
     "title": "リポジトリを移動する",
     "message": "リポジトリは\"{ currDir }\"から\"{ newDir }\"まで移動できませんでした。"
   },
+  "cantAddIpfsToPath": {
+    "title": "PATHにIPFS",
+    "message": "IPFSをPATHに追加できませんでした。"
+  },
   "runGarbageCollectorErrored": {
     "title": "ゴミコレクター",
     "message": "ゴミコレクターは成功に完了できませんでした。"
+  },
+  "downloadCidContentDialog": {
+    "title": "ローカル・ディレクトリにダウンロード",
+    "message": "CID、IPFSパス、それともIPNSパスを入力：",
+    "action": "次へ"
+  },
+  "cantResolveCidDialog": {
+    "title": "エラー",
+    "message": "\"{ path }\"を解決できませんでした。"
+  },
+  "couldNotGetCidDialog": {
+    "title": "エラー",
+    "message": "\"{ path }\"をフェッチできませんでした。"
+  },
+  "contentsSavedDialog": {
+    "title": "成功",
+    "message": "\"{ path }\"のコンテンツは成功にダウンロードされました。",
+    "action": "ファイルを見る"
+  },
+  "couldNotSaveDialog": {
+    "title": "ディスクに書き込めませんでした",
+    "message": "There was an error writing to \"{ dir }\": \"{ error }\". Please try again or inspect logs for more details."
   },
   "launchAtLoginNotSupported": {
     "title": "エラー",
@@ -162,9 +187,36 @@
     "title": "エラー",
     "message": "ログイン時の開始はこのコンピューターに有効できませんでした。"
   },
+  "enableIpfsOnPath": {
+    "title": "PATHにIPFSを有効",
+    "message": "オプションを有効にすると、\"ipfs\"の入力でIPFSはコマンドラインから使用可能になります。この作用は可逆的です。",
+    "action": "有効"
+  },
+  "disableIpfsOnPath": {
+    "title": "PATHにIPFSを無効",
+    "message": "オプションを無効にすると、\"ipfs\"の入力でIPFSはコマンドラインから使用できなくなります。",
+    "action": "無効"
+  },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "スクリーンショットショートカットを有効にする",
     "message": "有効にすると、IPFSデスクトップは実行される限り\"{ accelerator }\"ショートカットはスクリーンショットを撮ることができます。"
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "ダウンロードのショートカットを有効",
+    "message": "有効にすると、IPFSデスクトップは実行される限り\"{ accelerator }\"ショートカットはファイルをダウンロードできます。"
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "IPFSにnpmをインストールする",
+    "message": "この実験的機能はシステムに\"ipfs-npm\"パッケージをインストールします。Node.jsのインストールを必要とします。",
+    "action": "インストール"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "エラー",
+    "message": "このシステムに\"ipfs-npm\"パッケージをインストールできませんでした。詳しくはログを読む、それともコマンドラインから\"npm install -g ipfs-npm\"を実行して手動でインストールして下さい。"
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "エラー",
+    "message": "このシステムに\"ipfs-npm\"パッケージをアンインストールできませんでした。詳しくはログを読む、それともコマンドラインから\"npm uninstall -g ipfs-npm\"を実行して手動でアンインストールして下さい。"
   },
   "settings": {
     "settings": "設定",
@@ -176,7 +228,9 @@
     "pubsub": "PubSubを有効",
     "namesysPubsub": "IPNS・オーバー・PubSubを有効",
     "automaticGC": "自動的なゴミコレクター",
+    "ipfsCommandLineTools": "コマンドラインツール",
     "takeScreenshotShortcut": "グローバルスクリーンショットのショートカット",
+    "downloadHashShortcut": "グローバルダウンロードのショートカット",
     "experiments": "実験",
     "npmOnIpfs": "IPFSにnpmを有効"
   },
@@ -191,24 +245,5 @@
   "clearCustomIpfsBinarySuccess": {
     "title": "カスタムIPFSバイナリを除去",
     "message": "カスタムIPFSバイナリは除去されました。同梱IPFSバージョンを使用し始めるのに、IPFSを再起動する必要があります。"
-  },
-  "unresponsiveWindowDialog": {
-    "title": "IPFS Desktop became unresponsive",
-    "message": "Ongoing operation is taking more resources than expected. Do you wish to abort, and forcefully reload the interface?",
-    "forceReload": "Yes, reload",
-    "doNothing": "Do nothing"
-  },
-  "migrationDialog": {
-    "title": "IPFS Desktop Migration",
-    "message": "One moment! IPFS Desktop needs to run the latest data store migrations:",
-    "closeAndContinue": "Continue in the background"
-  },
-  "startupFailedDialog": {
-    "title": "IPFS Desktop Startup Has Failed",
-    "message": "IPFS node has encountered an error and startup could not be completed:"
-  },
-  "invalidRepositoryDialog": {
-    "title": "Invalid IPFS Repository or Configuration File",
-    "message": "The repository at “{ path }” is invalid. The “config” file must be a valid JSON.\n\nBefore starting IPFS Desktop again, please fix the configuration file or rename the old repository to “.ipfs.backup”."
   }
 }

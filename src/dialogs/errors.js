@@ -3,13 +3,7 @@ const path = require('path')
 const i18n = require('i18next')
 const dialog = require('./dialog')
 
-const issueTitle = (e) => {
-  const es = e.stack ? e.stack.toString() : 'unknown error, no stacktrace'
-  const firstLine = es.substr(0, Math.min(es.indexOf('\n'), 72))
-  return `[gui error report] ${firstLine}`
-}
-
-const issueTemplate = (e) => `👉️ Please describe what you were doing when this error happened.
+const issueTemplate = (e) => `Please describe what you were doing when this error happened.
 
 **Specifications**
 
@@ -27,7 +21,7 @@ ${e.stack}
 
 let hasErrored = false
 
-const generateErrorIssueUrl = (e) => `https://github.com/ipfs-shipyard/ipfs-desktop/issues/new?labels=kind%2Fbug%2C+need%2Ftriage&template=bug_report.md&title=${encodeURI(issueTitle(e))}&body=${encodeURI(issueTemplate(e))}`.substring(0, 1999)
+const newIssueUrl = (e) => `https://github.com/ipfs-shipyard/ipfs-desktop/issues/new?labels=need%2Ftriage&template=bug_report.md&title=[gui%20error%20report]&body=${encodeURI(issueTemplate(e))}`.substring(0, 1999)
 
 function criticalErrorDialog (e) {
   if (hasErrored) return
@@ -47,7 +41,7 @@ function criticalErrorDialog (e) {
   if (option === 0) {
     app.relaunch()
   } else if (option === 2) {
-    shell.openExternal(generateErrorIssueUrl(e))
+    shell.openExternal(newIssueUrl(e))
   }
 
   app.exit(1)
@@ -81,7 +75,7 @@ function recoverableErrorDialog (e, options) {
   const option = dialog(cfg)
 
   if (option === 1) {
-    shell.openExternal(generateErrorIssueUrl(e))
+    shell.openExternal(newIssueUrl(e))
   } else if (option === 2) {
     shell.openPath(path.join(app.getPath('userData'), 'combined.log'))
   }
@@ -89,6 +83,5 @@ function recoverableErrorDialog (e, options) {
 
 module.exports = Object.freeze({
   criticalErrorDialog,
-  recoverableErrorDialog,
-  generateErrorIssueUrl
+  recoverableErrorDialog
 })
