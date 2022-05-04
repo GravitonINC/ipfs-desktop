@@ -31,8 +31,6 @@ const createWindow = () => {
       webSecurity: false,
       allowRendererProcessReuse: true,
       allowRunningInsecureContent: false,
-      // enableRemoteModule: process.env.NODE_ENV === 'test', // https://github.com/electron-userland/spectron/pull/738#issuecomment-754810364
-      // nodeIntegration: process.env.NODE_ENV === 'test' && false
       nodeIntegration: false
     }
   })
@@ -41,7 +39,7 @@ const createWindow = () => {
   if (process.env.DEBUG && process.env.DEBUG.match(/ipfs-desktop/)) {
     window.webContents.openDevTools()
   }
-  window.webContents.openDevTools()
+  
   window.webContents.on('crashed', event => {
     logger.error(`[web ui] crashed: ${event.toString()}`)
   })

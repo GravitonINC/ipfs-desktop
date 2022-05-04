@@ -3453,24 +3453,18 @@
   dependencies:
     "define-properties" "^1.1.3"
 
-"go-ipfs@*", "go-ipfs@0.11.0":
-  "integrity" "sha512-l6uZTeEZYQQpKsoI8DXV5j1UDiq7xTIwNyp5lGJmY1cR9LoWHR4lIhbSpc2DfvOv5Ly/+BC/CLvo7vIFmdmyGQ=="
-  "resolved" "https://registry.npmjs.org/go-ipfs/-/go-ipfs-0.11.0.tgz"
-  "version" "0.11.0"
+"go-ipfs@*", "go-ipfs@^0.12.2":
+  "integrity" "sha512-4eA4xFRDM1JfC3W+IkAk2VUauVWKp3zHghiXCs+8SizhNrfajTwzhLduFNnQtjLYicXlhfX1Hjm8uk011ypV6Q=="
+  "resolved" "https://registry.npmjs.org/go-ipfs/-/go-ipfs-0.12.2.tgz"
+  "version" "0.12.2"
   dependencies:
     "cachedir" "^2.3.0"
-    "go-platform" "^1.0.0"
     "got" "^11.7.0"
     "gunzip-maybe" "^1.4.2"
     "hasha" "^5.2.2"
     "pkg-conf" "^3.1.0"
     "tar-fs" "^2.1.0"
     "unzip-stream" "^0.3.0"
-
-"go-platform@^1.0.0":
-  "integrity" "sha1-sF/2uSdAB9JGsWQjXwP39qWWJsc="
-  "resolved" "https://registry.npmjs.org/go-platform/-/go-platform-1.0.0.tgz"
-  "version" "1.0.0"
 
 "got@^11.0.2", "got@^11.7.0", "got@^11.8.0", "got@^11.8.2":
   "integrity" "sha512-D0QywKgIe30ODs+fm8wMZiAcZjypcCodPNuMz5H9Mny7RJ+IjJ10BdmGW7OM7fHXP+O7r6ZwapQ/YQmMSvB0UQ=="

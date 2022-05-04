@@ -91,5 +91,3 @@ window.localStorage.setItem('ipfsApi', urlParams.get('api'))
 ipcRenderer.on('request-open-sync-path', () => {
   console.log('request-open-sync-path  on preload.js ')
 })
-
-ipcRenderer.send('sync-message', 'this is data secton', 'arg1')
