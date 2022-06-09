@@ -1,7 +1,7 @@
 {
   "name": "ipfs-retro-desktop",
   "private": true,
-  "version": "0.1.3",
+  "version": "0.20.5",
   "productName": "IPFS Retro Desktop",
   "description": "IPFS Retro Native Application",
   "main": "src/index.js",
